@@ -14,7 +14,7 @@ tags:								#标签
 
 ## 一.FedGraphNN
 
-[FedGraphNN](https://github.com/FedML-AI/FedGraphNN)是[Chaoyang He](https://chaoyanghe.com/)大神在[FedML](https://github.com/FedML-AI/FedML)基础上，进一步封装专门进行图神经网络训练的联邦学习框架。论文将图神经网络的联邦学习分为了两个部分，GNN训练和联邦学习更新。GNN训练分为两个阶段，Message-passing和Readout。Message-pass顾名思义是将图节点周围的节点信息进行聚合，之后利用聚合后的信息进行节点的隐含状态的更新。Readout阶段根据图神经网络任务的不同，需要将最后一层网络的值进行计算，为下游的任务提供预测。联邦学习则是依据不同训练节点获得的神经网络参数进行全局更新，将全局更新后的参数返回给各个训练节点，随后进行下一轮的训练。目前支持的图神经网络有GCN、GAT、GraphSage、SGC以及GIN，支持的联邦学习算法有FedAvg、FedOPT和FedProx。
+[FedGraphNN](https://github.com/FedML-AI/FedGraphNN)是[Chaoyang He](https://chaoyanghe.com/)大神在[FedML](https://github.com/FedML-AI/FedML)基础上，进一步封装专门进行图神经网络训练的联邦学习框架。论文将图神经网络的联邦学习分为了两个部分，GNN训练和联邦学习更新。GNN训练分为两个阶段，Message-passing和Readout。Message-pass顾名思义是将图节点周围的节点信息进行聚合，之后利用聚合后的信息进行节点的隐含状态的更新。Readout阶段根据图神经网络任务的不同，需要将最后一层网络的值进行计算，为下游的任务提供预测。联邦学习则是依据不同训练节点获得的神经网络参数进行全局更新，将全局更新后的参数返回给各个训练节点，随后进行下一轮的训练。目前支持的图神经网络有GCN、GAT、GraphSage、SGC以及GIN，支持的联邦学习算法有FedAvg、FedOPT和FedProx等。
 
 FedGraphNN同时提供了多种数据集进行选择使用，并根据任务和使用领域的不同，将其划分为了3大类和7小类。同时为了模拟数据的Non.IID问题，框架提供了基于隐狄利克雷分布的取样方法，生成存在Non.IID问题的训练数据进行仿真。
 
@@ -95,8 +95,6 @@ send和receive各自维护着一个缓冲队列，send每隔0.003s轮询一次�
 
 1.目前FedGraphNN仅仅支持同步通信，但是同步通信会带来很大的性能损耗，整体训练会被响应最慢的机器拖累。在异构设备（计算资源不一致)、网络环境不佳的情况下会尤其明显，而这些恰恰是联邦学习常用的场景。
 
-2.当前支持的联邦学习算法不足，FedNAS、Vertical FL等算法尚且不支持。
+2.目前的数据集不支持图神经网络的自监督和半监督学习。
 
-3.目前的数据集不支持图神经网络的自监督和半监督学习。
-
-4.在大数据集实验中提及了Non.IID对性能造成的影响，但是并未提供解决问题的方法。
+3.在大数据集实验中提及了Non.IID对性能造成的影响，但是并未提供解决问题的方法。
