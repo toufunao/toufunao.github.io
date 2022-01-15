@@ -28,13 +28,9 @@ FedGraphNN提供了集中式和分布式的训练demo，存在部分的坑和bug
 
 FedGraphNN的demo以及使用脚本提供的都是MPI的通信形式，但是经过源码的阅读，FedGraphNN基于的FedML平台其实也已经实现了MQTT和GRPC的通信方式，但是MPI为默认通信。因此，仅以MPI作为示例进行解释。
 
-
-
-![](https://github.com/toufunao/pic_repo/blob/main/2022-01-13/fl.jpg?raw=true)
-
-
-
 ### 2.1. 总体架构
+
+![](https://github.com/toufunao/pic_repo/blob/main/2022-01-13/server.jpg?raw=true)
 
 首先我们来看整体的架构。对于联邦学习来说，Server实际的作用是对各个Client的参数进行一个Aggregate操作，经过一定算法后再将更新后参数返回给各个Client。Client的作用就是在本地上利用自己的数据进行训练，并根据Server端传来的更新后的参数进行调整。
 
@@ -43,6 +39,8 @@ FedGraphNN的demo以及使用脚本提供的都是MPI的通信形式，但是经
 Server端同理，但是不同的是，Server端是对参数进行Aggregate，因此不需要进行训练。同时，Server启动时便会发送init消息，通知各个Client进行初始化准备。
 
 ### 2.2. MPI同步通信
+
+![](https://github.com/toufunao/pic_repo/blob/main/2022-01-13/communication.jpg?raw=true)
 
 ```python
 def FedML_init():
@@ -86,6 +84,26 @@ send和receive各自维护着一个缓冲队列，send每隔0.003s轮询一次�
             time.sleep(0.3)
         logging.info("!!!!!!handle_receive_message stopped!!!")
 ```
+
+### 2.3. 处理流程
+
+接上图：
+
+1.Server启动，发送初始化信息给Clients。
+
+2.Client收到Server端发送的消息，触发handler函数。
+
+3.Hander函数进行本地模型的训练。
+
+4.一轮训练结束后，将训练好的参数放入发送队列。
+
+5.发送线程将队列中的数据发送回Server。
+
+6.Server收到Client端发送的消息，触发handler函数。
+
+7.Hander函数进行全局模型参数的更新。
+
+8.将更新后的全局参数传入发送队列进行下发，出发Clients的下一轮迭代训练。
 
 ## 三.设计分析
 
